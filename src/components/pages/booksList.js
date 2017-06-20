@@ -3,6 +3,10 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {getBooks} from '../../actions/booksActions';
+import {Grid, Col, Row, Button} from 'react-bootstrap';
+
+import BookItem from './bookItem';
+import BooksForm from './BooksForm';
 
 class BooksList extends React.Component {
   componentDidMount(){
@@ -13,18 +17,25 @@ class BooksList extends React.Component {
     console.log('ARE WE ACCESSING?', this.props.books);
     const booksList = this.props.books.map(function(booksArr){
       return(
-        <div key={booksArr.id}>
-          <h2>{booksArr.title}</h2>
-          <h2>{booksArr.title}</h2>
-          <h2>{booksArr.title}</h2>
-        </div>
+       <Col xs={12} sm={6} md={4} key={booksArr.id}>
+        <BookItem
+          id={booksArr.id}
+          title={booksArr.title}
+          description={booksArr.description}
+          price={booksArr.price}
+        />
+       </Col>
       )
     })
     return(
-      <div>
-        <h1>Hello React</h1>
-        {booksList}
-      </div>
+      <Grid>
+         <Row style={{marginTop:'15px'}}>
+            <Col cs={12} sm={6}>
+              <BooksForm />
+            </Col>
+          {booksList}
+         </Row>
+       </Grid>
     )
   }
 }
@@ -44,3 +55,4 @@ function mapDispatchToProps(dispatch){
 export  default connect(mapStateToProps, mapDispatchToProps)(BooksList);
 
 //mapStateToProps componenta subsribuje do store
+//this.props mohou byt podenene z property komponenty ktera si nekam saha a nebo mohou byt primo z namapovani oznaceny ala this.props.books..

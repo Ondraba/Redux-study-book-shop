@@ -34,75 +34,75 @@ render(
   , document.getElementById('app')
 );
 
-store.dispatch({
-  type: "POST_BOOK",
-  payload: [{
-    id:1,
-    title:'this is the book title',
-    description: 'this is desc',
-    price: 22
-  },
-  {
-    id:2,
-    title:'this is the book title two',
-    description: 'this is desc two',
-    price: 55
-  }]
-})
-
-
-store.dispatch({
-  type: "POST_BOOK",
-  payload: [{
-    id:3,
-    title:'this is the book title 3',
-    description: 'this is desc 3',
-    price: 99
-  }]
-})
-
-
-store.dispatch({
-  type: "DELETE_BOOK",
-  payload: {
-    id:1
-  }
-})
-
-store.dispatch({
-  type: "UPDATE_BOOK",
-  payload: {
-    id:2,
-    title:'Learn React'
-  }
-})
+// store.dispatch({
+//   type: "POST_BOOK",
+//   payload: [{
+//     id:1,
+//     title:'this is the book title',
+//     description: 'this is desc',
+//     price: 22
+//   },
+//   {
+//     id:2,
+//     title:'this is the book title two',
+//     description: 'this is desc two',
+//     price: 55
+//   }]
+// })
+//
+//
+// store.dispatch({
+//   type: "POST_BOOK",
+//   payload: [{
+//     id:3,
+//     title:'this is the book title 3',
+//     description: 'this is desc 3',
+//     price: 99
+//   }]
+// })
+//
+//
+// store.dispatch({
+//   type: "DELETE_BOOK",
+//   payload: {
+//     id:1
+//   }
+// })
+//
+// store.dispatch({
+//   type: "UPDATE_BOOK",
+//   payload: {
+//     id:2,
+//     title:'Learn React'
+//   }
+// })
 
 //card
 
-store.dispatch(addToCart([{id: 1}]));
+// store.dispatch(addToCart([{id: 1}]));
 
-store.dispatch(postBooks(
-  [{
-    id:1,
-    title:'this is the book title',
-    description: 'this is desc',
-    price: 22
-  },
-  {
-    id:2,
-    title:'this is the book title two',
-    description: 'this is desc two',
-    price: 55
-  }]
-))
+// store.dispatch(postBooks(
+//   [{
+//     id:1,
+//     title:'this is the book title',
+//     description: 'this is desc',
+//     price: 22
+//   },
+//   {
+//     id:2,
+//     title:'this is the book title two',
+//     description: 'this is desc two',
+//     price: 55
+//   }]
+// ))
 
-store.dispatch(deleteBooks(
-  {id:1}
-))
-
-store.dispatch(updateBooks(
-  {
-    id:2,
-    title:'Learn React'
-  }
-))
+// store.dispatch(deleteBooks(
+//   {id:1}
+// ))
+//
+// store.dispatch(updateBooks(
+//   {
+//     id:2,
+//     title:'Learn React'
+//   }
+// ))
