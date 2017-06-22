@@ -1543,6 +1543,9 @@ function booksReducer() {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 exports.cartReducers = cartReducers;
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -1552,7 +1555,29 @@ function cartReducers() {
   var action = arguments[1];
 
   switch (action.type) {
+
     case "ADD_TO_CART":
+      return { cart: [].concat(_toConsumableArray(state), _toConsumableArray(action.payload)) };
+      break;
+
+    case "UPDATE_CART":
+      var currentBookToUpdate = [].concat(_toConsumableArray(state.cart));
+
+      var indexToUpdate = currentBookToUpdate.findIndex(function (book) {
+        return book._id === action._id;
+      });
+
+      var newBookToUpdate = _extends({}, currentBookToUpdate[indexToUpdate], {
+        quantity: currentBookToUpdate[indexToUpdate].quantity + action.unit
+      });
+
+      var cartUpdate = [].concat(_toConsumableArray(currentBookToUpdate.slice(0, indexToUpdate)), [newBookToUpdate], _toConsumableArray(currentBookToUpdate.slice(indexToUpdate + 1)));
+
+      return _extends({}, state, {
+        cart: cartUpdate });
+      break;
+
+    case "DELETE_CART_ITEM":
       return { cart: [].concat(_toConsumableArray(state), _toConsumableArray(action.payload)) };
       break;
   }
@@ -1570,10 +1595,27 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.addToCart = addToCart;
+exports.updateCart = updateCart;
+exports.deleteCartItem = deleteCartItem;
 function addToCart(book) {
   return {
     type: "ADD_TO_CART",
     payload: book
+  };
+}
+
+function updateCart(_id, unit) {
+  return {
+    type: "UPDATE_CART",
+    _id: _id,
+    unit: unit
+  };
+}
+
+function deleteCartItem(cart) {
+  return {
+    type: "DELETE_CART_ITEM",
+    payload: cart
   };
 }
 
@@ -43480,9 +43522,23 @@ var BookItem = function (_React$Component) {
         _id: this.props._id,
         title: this.props.title,
         description: this.props.description,
-        price: this.props.price
+        price: this.props.price,
+        quantity: 1
       }]);
-      this.props.addToCart(book);
+      //check if cart is empty
+      if (this.props.cart.length > 0) {
+        var _id = this.props._id;
+        var cartIndex = this.props.cart.findIndex(function (cart) {
+          return cart._id === _id;
+        });
+        if (cartIndex === -1) {
+          this.props.addToCart(book);
+        } else {
+          this.props.updateCart(_id, 1);
+        }
+      } else {
+        this.props.addToCart(book);
+      }
     }
   }, {
     key: 'render',
@@ -43538,7 +43594,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return (0, _redux.bindActionCreators)({
-    addToCart: _cartActions.addToCart
+    addToCart: _cartActions.addToCart,
+    updateCart: _cartActions.updateCart
   }, dispatch);
 }
 
@@ -43703,7 +43760,13 @@ var _reactRedux = __webpack_require__(219);
 
 var _reactBootstrap = __webpack_require__(471);
 
+var _redux = __webpack_require__(8);
+
+var _cartActions = __webpack_require__(27);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -43714,13 +43777,57 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Cart = function (_React$Component) {
   _inherits(Cart, _React$Component);
 
+  _createClass(Cart, [{
+    key: 'onDelete',
+    value: function onDelete(_id) {
+      var currentBookToDelete = this.props.cart;
+      var indexToDelete = currentBookToDelete.findIndex(function (bookFromCart) {
+        return bookFromCart._id === _id;
+      }
+      //just parameter name random
+      //zkratka - nemaze knihu muttable stylem, ale provedu zamereni
+      //indexu, slicnu pole a vratim novou cartu po smazani a state jen concatnu
+      );
+      var cartAfterDelete = [].concat(_toConsumableArray(currentBookToDelete.slice(0, indexToDelete)), _toConsumableArray(currentBookToDelete.slice(indexToDelete + 1)));
+
+      this.props.deleteCartItem(cartAfterDelete);
+    }
+  }, {
+    key: 'onIncrement',
+    value: function onIncrement(_id) {
+      this.props.updateCart(_id, 1);
+    }
+  }, {
+    key: 'onDecrement',
+    value: function onDecrement(_id, quantity) {
+      if (quantity > 1) {
+        this.props.updateCart(_id, -1);
+      }
+    }
+  }]);
+
   function Cart() {
     _classCallCheck(this, Cart);
 
-    return _possibleConstructorReturn(this, (Cart.__proto__ || Object.getPrototypeOf(Cart)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Cart.__proto__ || Object.getPrototypeOf(Cart)).call(this));
+
+    _this.state = {
+      showModal: false
+    };
+    return _this;
   }
 
   _createClass(Cart, [{
+    key: 'open',
+    value: function open() {
+      this.setState({ showModal: true });
+    }
+  }, {
+    key: 'close',
+    value: function close() {
+      this.setState({ showModal: false });
+    }
+  }, {
     key: 'render',
     value: function render() {
       if (this.props.cart[0]) {
@@ -43779,7 +43886,11 @@ var Cart = function (_React$Component) {
                 'h6',
                 null,
                 'qty. ',
-                _react2.default.createElement(_reactBootstrap.Label, { bsStyle: 'success' })
+                _react2.default.createElement(
+                  _reactBootstrap.Label,
+                  { bsStyle: 'success' },
+                  cartArr.quantity
+                )
               )
             ),
             _react2.default.createElement(
@@ -43790,12 +43901,18 @@ var Cart = function (_React$Component) {
                 { style: { minWidth: '300px' } },
                 _react2.default.createElement(
                   _reactBootstrap.Button,
-                  { bsStyle: 'default', bsSize: 'small' },
+                  {
+                    bsStyle: 'default', bsSize: 'small',
+                    onClick: this.onDecrement.bind(this, cartArr._id, cartArr.quantity)
+                  },
                   '-'
                 ),
                 _react2.default.createElement(
                   _reactBootstrap.Button,
-                  { bsStyle: 'default', bsSize: 'small' },
+                  {
+                    bsStyle: 'default', bsSize: 'small',
+                    onClick: this.onIncrement.bind(this, cartArr._id)
+                  },
                   '+'
                 ),
                 _react2.default.createElement(
@@ -43805,18 +43922,81 @@ var Cart = function (_React$Component) {
                 ),
                 _react2.default.createElement(
                   _reactBootstrap.Button,
-                  { bsStyle: 'danger', bsSize: 'small' },
+                  {
+                    onClick: this.onDelete.bind(this, cartArr._id),
+                    bsStyle: 'danger', bsSize: 'small' },
                   'DELETE'
                 )
               )
             )
           )
         );
-      });
-      return _react2.default.createElement(
+      }, this
+      //to be sure im in right context
+
+      );return _react2.default.createElement(
         _reactBootstrap.Panel,
         { header: 'Cart', bsStyle: 'primary' },
-        cartItemsList
+        cartItemsList,
+        _react2.default.createElement(
+          _reactBootstrap.Row,
+          null,
+          _react2.default.createElement(
+            _reactBootstrap.Col,
+            { xs: 12 },
+            _react2.default.createElement(
+              'h6',
+              null,
+              'Total amount: '
+            ),
+            _react2.default.createElement(
+              _reactBootstrap.Button,
+              { onClick: this.open.bind(this), bsStyle: 'success', bsSize: 'small' },
+              'PROCEED TO CHECKOUT'
+            )
+          )
+        ),
+        _react2.default.createElement(
+          _reactBootstrap.Modal,
+          { show: this.state.showModal, onHide: this.close.bind(this) },
+          _react2.default.createElement(
+            _reactBootstrap.Modal.Header,
+            { closeButton: true },
+            _react2.default.createElement(
+              _reactBootstrap.Modal.Title,
+              null,
+              'Thank you'
+            )
+          ),
+          _react2.default.createElement(
+            _reactBootstrap.Modal.Body,
+            null,
+            _react2.default.createElement(
+              'h6',
+              null,
+              'Your order has been saved'
+            ),
+            _react2.default.createElement(
+              'p',
+              null,
+              'You will receive an email confirmation'
+            )
+          ),
+          _react2.default.createElement(
+            _reactBootstrap.Modal.Footer,
+            null,
+            _react2.default.createElement(
+              _reactBootstrap.Col,
+              { xs: 6 },
+              'Total $:'
+            ),
+            _react2.default.createElement(
+              _reactBootstrap.Button,
+              { onClick: this.close.bind(this) },
+              'Close'
+            )
+          )
+        )
       );
     }
   }]);
@@ -43830,7 +44010,14 @@ function mapStateToProps(state) {
   };
 }
 
-exports.default = (0, _reactRedux.connect)(mapStateToProps)(Cart);
+function mapDispatchToProps(dispatch) {
+  return (0, _redux.bindActionCreators)({
+    deleteCartItem: _cartActions.deleteCartItem,
+    updateCart: _cartActions.updateCart
+  }, dispatch);
+}
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Cart);
 
 //jede do storu > cart reducer > cart pole
 
