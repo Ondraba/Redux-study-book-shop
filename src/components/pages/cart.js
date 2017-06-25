@@ -98,7 +98,7 @@ class Cart extends React.Component{
         {cartItemsList}
         <Row>
           <Col xs={12}>
-            <h6>Total amount: </h6>
+            <h6>Total amount: {this.props.totalAmount}</h6>
             <Button onClick={this.open.bind(this)} bsStyle='success' bsSize='small'>
             PROCEED TO CHECKOUT
             </Button>
@@ -113,7 +113,7 @@ class Cart extends React.Component{
              <p>You will receive an email confirmation</p>
           </Modal.Body>
           <Modal.Footer>
-            <Col xs={6}>Total $:</Col>
+            <Col xs={6}>Total $: {this.props.totalAmount}</Col>
             <Button onClick={this.close.bind(this)}>Close</Button>
           </Modal.Footer>
         </Modal>
@@ -124,7 +124,8 @@ class Cart extends React.Component{
 
 function mapStateToProps(state){
   return{
-    cart: state.cart.cart
+    cart: state.cart.cart,
+    totalAmount: state.cart.totalAmount,
   }
 }
 

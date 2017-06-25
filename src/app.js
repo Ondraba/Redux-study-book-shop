@@ -5,6 +5,8 @@ import React from 'react';
 import {render} from 'react-dom';
 import {Provider} from 'react-redux';
 
+import {Router, Route, IndexRoute, browserHistory} from 'react-router';
+
 
 import {applyMiddleware, createStore} from 'redux';
 import {createLogger} from 'redux-logger';
@@ -25,13 +27,25 @@ const store = createStore(reducers, middleware);
 // })
 
 // store.dispatch({type:"INCREMENT", payload:1})
-import BooksList from './components/pages/booksList.js';
+import BooksList from './components/pages/booksList';
+import Cart from './components/pages/cart';
+import BooksForm from './components/pages/booksForm';
+import Main from './main';
+
+const Routes = (
+  <Provider store={store}>
+    <Router history={browserHistory}>
+      <Route path="/" component={Main}>
+        <IndexRoute component={BooksList}></IndexRoute>
+        <Route path="/admin" component={BooksForm} />
+         <Route path="/cart" component={Cart} />
+      </Route>
+    </Router>
+  </Provider>
+)
 
 render(
-  <Provider store={store}>
-    <BooksList />
-  </Provider>
-  , document.getElementById('app')
+  Routes, document.getElementById('app')
 );
 
 // store.dispatch({
