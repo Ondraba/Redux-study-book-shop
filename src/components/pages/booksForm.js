@@ -40,14 +40,14 @@ class BooksForm extends React.Component{
         <ControlLabel>Title</ControlLabel>
         <FormControl
           type="text"
-          placeholder="Enter Title"
+          placeholder="Enter Titleeees"
           ref="title"/>
       </FormGroup>
       <FormGroup controlId="description">
         <ControlLabel>Description</ControlLabel>
         <FormControl
           type="text"
-          placeholder="Enter Description"
+          placeholder="Enter Descriptiosssssn"
           ref="description"/>
       </FormGroup>
       <FormGroup controlId="price">

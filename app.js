@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //APIs
 
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/bookshop')
+mongoose.connect('mongodb://localhost:27017/bookshop');
 
 var Books = require('./models/books.js');
 
@@ -41,6 +41,55 @@ app.post('/books', function(req,res){
     res.json(books);
   })
 });
+
+//getBooks
+
+app.get('/books',function(req, res){
+  Books.find(function(err,books){
+    if(err){
+      throw err;
+    }
+    res.json(books);
+  })
+});
+
+//deleteBooks
+
+app.delete('/books/:_id', function(req, res){
+  var query = {_id: req.params._id};
+
+  Books.remove(query, function(err, books){
+    if(err){
+      throw err;
+    }
+    res.json(books);
+  })
+})
+
+//update booksActions
+
+app.put('/books/:_id', function(req,res){
+  var book = req.body;
+  var query = req.params._id;
+
+  var update = {
+    '$set':{
+      title:book.title,
+      description: book.description,
+      image:book.image,
+      price:book.price
+    }
+  };
+  var options = {new:true};
+  //get new updated record rather then original one
+
+  Books.findOneAndUpdate(query, update, options, function(err, books){
+    if(err){
+      throw err;
+    }
+    res.json(books);
+  })
+})
 
 //END APIs
 

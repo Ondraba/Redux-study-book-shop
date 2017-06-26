@@ -35,7 +35,7 @@ class BooksList extends React.Component {
           <Cart />
         </Row>
          <Row style={{marginTop:'15px'}}>
-            <Col cs={12} sm={6}>
+            <Col xs={12} sm={6}>
               <BooksForm />
             </Col>
           {booksList}
