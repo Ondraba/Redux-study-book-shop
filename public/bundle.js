@@ -8372,14 +8372,18 @@ var _axios2 = _interopRequireDefault(_axios);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function getBooks() {
-  return {
-    type: "GET_BOOKS"
+  return function (dispatch) {
+    _axios2.default.get("/api/books").then(function (response) {
+      dispatch({ type: "GET_BOOKS", payload: response.data });
+    }).catch(function (err) {
+      dispatch({ type: "GET_BOOKS_REJECTED", payload: err });
+    });
   };
 }
 
 function postBooks(book) {
   return function (dispatch) {
-    _axios2.default.post("/books", book).then(function (response) {
+    _axios2.default.post("/api/books", book).then(function (response) {
       dispatch({ type: "POST_BOOK", payload: response.data });
     }).catch(function (err) {
       dispatch({ type: "POST_BOOK_REJECTED", payload: "there was an error while posting new book" });
@@ -8393,11 +8397,23 @@ function postBooks(book) {
 //       payload: book
 //   }
 // }
+//
+// export function deleteBooks(id){
+//   return {
+//       type: "DELETE_BOOK",
+//       payload: id
+//   }
+// }
+//ten dispatch v returnu dela THUNK middleware
+//reverse proxi, skryti struktury vnitrni pred klientem, separation of concerns and crossdoman sharing
 
 function deleteBooks(id) {
-  return {
-    type: "DELETE_BOOK",
-    payload: id
+  return function (dispatch) {
+    _axios2.default.delete("/api/books/" + id).then(function (response) {
+      dispatch({ type: "DELETE_BOOK", payload: id });
+    }).catch(function (err) {
+      dispatch({ type: "DELETE_BOOK_REJECTED", payload: err });
+    });
   };
 }
 
@@ -25080,17 +25096,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 function booksReducer() {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-    books: [{
-      _id: 1,
-      title: 'this is the book title',
-      description: 'this is desc',
-      price: 72
-    }, {
-      _id: 2,
-      title: 'this is the book title two',
-      description: 'this is desc two',
-      price: 25
-    }] };
+    books: []
+  };
   var action = arguments[1];
 
   switch (action.type) {
@@ -25098,7 +25105,7 @@ function booksReducer() {
     // return state + action.payload;
     // break;
     case "GET_BOOKS":
-      return _extends({}, state, { books: [].concat(_toConsumableArray(state.books)) });
+      return _extends({}, state, { books: [].concat(_toConsumableArray(action.payload)) });
       break;
 
     case "POST_BOOK":

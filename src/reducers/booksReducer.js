@@ -1,24 +1,14 @@
 "user strict"
 
 export function booksReducer(state={
-  books:[{
-      _id:1,
-      title:'this is the book title',
-      description: 'this is desc',
-      price: 72
-    },
-    {
-      _id:2,
-      title:'this is the book title two',
-      description: 'this is desc two',
-      price: 25
-    }]},action){
+  books:[]
+},action){
   switch(action.type){
     // case "INCREMENT":
     // return state + action.payload;
     // break;
     case "GET_BOOKS":
-    return {...state, books:[...state.books]}
+    return {...state, books:[...action.payload]}
     break;
 
     case "POST_BOOK":
